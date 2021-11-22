@@ -7,31 +7,40 @@ public class EnemiesComposite : Composite
 {
     [SerializeField] private EnemiesViewFactory enemiesViewFactory;
     [SerializeField] private int _limit;
+    [SerializeField] private float _spawnInterval = 5f;
     [SerializeField] private Area _area;
     [SerializeField] private TankComposite tankComposite;
     private List<Enemy> enemies = new List<Enemy>();
-    private List<Coroutine> timers = new List<Coroutine>();
+    private Timers timers;
 
     public override void Compose()
     {
+        List<Timer> timersList = new List<Timer>();
         for (int i = 0; i < _limit; i++)
         {
-            var timer = StartCoroutine(Timer(i * 5f, CreateRandomEnemy));
-            timers.Add(timer);
+            var timer = new Timer(i * _spawnInterval, CreateRandomEnemy);
+            timersList.Add(timer);
         }
+        timers = new Timers(timersList);
     }
 
-    private IEnumerator Timer(float time, Action onEnd)
+    public void Update()
     {
-        yield return new WaitForSeconds(time);
-        onEnd?.Invoke();
+        if (timers != null)
+        {
+            timers.AddTime(Time.deltaTime);
+            if (timers.IsEnd())
+            {
+                timers = null;
+            }
+        }
     }
 
     private void CreateRandomEnemy()
     {
         var rand = UnityEngine.Random.Range (0, 2);
         Enemy enemy = null;
-        var position = GetRandomPositionOutsideScreen();
+        var position = GetRandomPositionOutsideArea();
         switch (rand)
         {
             case 0:
@@ -45,7 +54,7 @@ public class EnemiesComposite : Composite
         enemies.Add(enemy);
     }
 
-    private Vector3 GetRandomPositionOutsideScreen()
+    private Vector3 GetRandomPositionOutsideArea()
     {
         var x = GetRandomValue(true);
         var y = GetRandomValue(x < -1 || x > 1);

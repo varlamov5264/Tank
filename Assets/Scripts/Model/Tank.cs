@@ -22,7 +22,7 @@ public class Tank : Transformable
         float horizontal = _inputManager.GetAxis(Axis.Horizontal);
         float vectical = _inputManager.GetAxis(Axis.Vertical);
         var direction = Forward * vectical;
-        if (!Raycast(direction, 1))
+        if (!Raycast(direction, 1.5f))
             Move(direction, deltaTime);
         Rotate(horizontal, deltaTime);
     }
