@@ -9,10 +9,10 @@ public class TransformableView : MonoBehaviour
         _model = model;
     }
 
-    public void LateUpdate()
+    public void Update()
     {
-        _model.Update();
+        _model.Update(Time.deltaTime);
         transform.position = _model.Position;
-        transform.rotation = Quaternion.Euler(0, _model.Rotation, 0);
+        transform.rotation = _model.GetQuaternion();
     }
 }

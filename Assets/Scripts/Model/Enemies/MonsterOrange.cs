@@ -10,5 +10,6 @@ public class MonsterOrange : Enemy
     public MonsterOrange(
         Vector3 position,
         float rotation,
-        Transformable target) : base(position, rotation, target) { }
+        Area area,
+        Transformable target) : base(position, rotation, area, target) { }
 }

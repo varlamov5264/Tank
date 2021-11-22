@@ -6,9 +6,11 @@ public class MonsterRed : Enemy
 {
 
     protected override float MoveSpeed => 2.5f;
+    protected override float MinDistance => 1.5f;
 
     public MonsterRed(
         Vector3 position,
         float rotation,
-        Transformable target) : base(position, rotation, target) { }
+        Area area,
+        Transformable target) : base(position, rotation, area, target) { }
 }

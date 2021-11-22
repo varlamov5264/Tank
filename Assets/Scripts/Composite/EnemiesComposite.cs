@@ -7,7 +7,7 @@ public class EnemiesComposite : Composite
 {
     [SerializeField] private EnemiesViewFactory enemiesViewFactory;
     [SerializeField] private int _limit;
-    [SerializeField] private Area area;
+    [SerializeField] private Area _area;
     [SerializeField] private TankComposite tankComposite;
     private List<Enemy> enemies = new List<Enemy>();
     private List<Coroutine> timers = new List<Coroutine>();
@@ -35,10 +35,10 @@ public class EnemiesComposite : Composite
         switch (rand)
         {
             case 0:
-                enemy = new MonsterOrange(position, 0, tankComposite.Model);
+                enemy = new MonsterOrange(position, 0, _area, tankComposite.Model);
                 break;
             case 1:
-                enemy = new MonsterRed(position, 0, tankComposite.Model);
+                enemy = new MonsterRed(position, 0, _area, tankComposite.Model);
                 break;
         }
         enemiesViewFactory.Create(enemy);
@@ -49,7 +49,7 @@ public class EnemiesComposite : Composite
     {
         var x = GetRandomValue(true);
         var y = GetRandomValue(x < -1 || x > 1);
-        return new Vector3(x, 0, y) * area.size.x;
+        return new Vector3(x, 0, y) * _area.size.x;
     }
 
     private float GetRandomValue(bool inside)

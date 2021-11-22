@@ -5,31 +5,31 @@ using UnityEngine;
 public class Tank : Transformable
 {
     private InputManager _inputManager;
-    private Area _area;
+    
 
     protected override float MoveSpeed => 6f;
     protected override float RotateSpeed => 120f;
 
-    public Tank(Vector3 position, float rotation, InputManager inputManager, Area area) : base(position, rotation)
+    public Tank(Vector3 position, float rotation, InputManager inputManager, Area area) : base(position, rotation, area)
     {
         _inputManager = inputManager;
-        _area = area;
     }
 
-    public override void Update()
+    public override void Update(float deltaTime)
     {
-        base.Update();
+        base.Update(deltaTime);
         _inputManager?.Update();
         float horizontal = _inputManager.GetAxis(Axis.Horizontal);
         float vectical = _inputManager.GetAxis(Axis.Vertical);
-        Move(Forward * vectical);
-        Rotate(horizontal);
+        var direction = Forward * vectical;
+        if (!Raycast(direction, 1))
+            Move(direction, deltaTime);
+        Rotate(horizontal, deltaTime);
     }
 
-    public override void Move(Vector3 shift)
+    public override void Move(Vector3 shift, float deltaTime)
     {
-        base.Move(shift);
-        Position.x = Mathf.Clamp(Position.x, -_area.size.x / 2, _area.size.x / 2);
-        Position.z = Mathf.Clamp(Position.z, -_area.size.y / 2, _area.size.y / 2);
+        base.Move(shift, deltaTime);
+        _area.ClampInArea(this);
     }
 }
