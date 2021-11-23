@@ -6,20 +6,25 @@ using UnityEngine;
 public class DefaultBullet : TransformableRaycast
 {
 
-    protected override float MoveSpeed => 100f;
+    protected override float MoveSpeed => 50f;
     public virtual float DamageHP => 100f;
-    public Action<Transformable> onDestroy;
+    protected virtual float DestroyTime => 2f;
+
+    private Timer destroyTimer;
 
     public DefaultBullet(
         Vector3 position,
-        float rotation) : base(position, rotation) { }
+        float rotation) : base(position, rotation)
+    {
+        destroyTimer = new Timer(DestroyTime, Destroy);
+    }
 
     public override void Update(float deltaTime)
     {
         base.Update(deltaTime);
         Move(Forward, deltaTime);
         RaycastHit hit;
-        if (Raycast(Forward, out hit, 0.1f))
+        if (Raycast(Forward, out hit, 1f))
         {
             if (hit.collider.TryGetComponent(out TransformableView transformableView))
             {
@@ -27,9 +32,10 @@ public class DefaultBullet : TransformableRaycast
                 {
                     var character = (DamageableCharacter)transformableView.Model;
                     character.Damage(DamageHP);
-                    onDestroy?.Invoke(this);
                 }
             }
+            Destroy();
         }
+        destroyTimer.AddTime(deltaTime);
     }
 }

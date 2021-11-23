@@ -16,7 +16,6 @@ public abstract class DamageableCharacter : TransformableRaycast, IDamageable
 
     public float HP => MaxHP - damagedHP;
     public bool IsDead => HP == 0;
-    public Action<Transformable> onDead;
 
     protected virtual float MaxHP => 100f;
     protected virtual float Protect => 1f;
@@ -28,6 +27,6 @@ public abstract class DamageableCharacter : TransformableRaycast, IDamageable
     {
         damagedHP = Mathf.Clamp(damagedHP + hp * Protect, 0, MaxHP);
         if (IsDead)
-            onDead?.Invoke(this);
+            Destroy();
     }
 }

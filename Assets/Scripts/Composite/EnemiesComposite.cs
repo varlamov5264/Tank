@@ -48,7 +48,7 @@ public class EnemiesComposite : Composite
                 enemy = new MonsterRed(position, 0, _area, tankComposite.Model);
                 break;
         }
-        enemy.onDead += DeadEnemy;
+        enemy.onDestroy += DeadEnemy;
         enemiesViewFactory.Create(enemy);
         enemies.Add(enemy);
     }
@@ -56,6 +56,7 @@ public class EnemiesComposite : Composite
     private void DeadEnemy(Transformable enemy)
     {
         enemiesViewFactory.Destroy(enemy);
+        CreateRandomEnemy();
     }
 
     private Vector3 GetRandomPositionOutsideArea()

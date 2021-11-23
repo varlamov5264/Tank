@@ -11,13 +11,18 @@ public abstract class TransformableViewFactory<T> : MonoBehaviour where T: Trans
         TransformableView view = Instantiate(GetTemplate(model), model.Position, Quaternion.Euler(0, 0, model.Rotation));
         view.Init(model);
         _views.Add(model, view);
+        model.onDestroy += Destroy;
     }
 
     public void Destroy(Transformable model)
     {
-        TransformableView view = _views[model];
-        _views.Remove(model);
-        Destroy(view.gameObject);
+        model.onDestroy -= Destroy;
+        if (_views.ContainsKey(model))
+        {
+            TransformableView view = _views[model];
+            _views.Remove(model);
+            Destroy(view.gameObject);
+        }
     }
 
     protected abstract TransformableView GetTemplate(T model);

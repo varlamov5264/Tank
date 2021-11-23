@@ -5,13 +5,14 @@ using UnityEngine;
 public class TankComposite : Composite
 {
     [SerializeField] private TransformableView _tankPrefab;
+    [SerializeField] private WeaponViewFactory _weaponViewFactory;
+    [SerializeField] private BulletsViewFactory _bulletsViewFactory;
     [SerializeField] private Area _playerArea;
 
     public Tank Model { get; private set; }
 
     private TransformableView _transformableView;
     private InputManager _inputManager;
-    private List<DefaultWeapon> _weapons = new List<DefaultWeapon>();
 
     private readonly Vector3 spawnPosition = new Vector3(0, 0.5f, 0);
 
@@ -22,19 +23,16 @@ public class TankComposite : Composite
         Model = new Tank(spawnPosition, 0,
                           _inputManager,
                           _playerArea);
-        _weapons.Add(new DefaultWeapon());
+        var _weapons = new List<DefaultWeapon>();
+        _weapons.Add(new DefaultWeapon(Model, _bulletsViewFactory));
         foreach (var weapon in _weapons)
-            _inputManager.onFireClick += weapon.OnFireClick;
-        _inputManager.onChangeWeaponMinus += Model.OnChangeWeaponMinus;
-        _inputManager.onChangeWeaponPlus += Model.OnChangeWeaponPlus;
+            _weaponViewFactory.Create(weapon, _transformableView.transform);
+        Model.InitWeapon(_weapons);
         _transformableView.Init(Model);
     }
 
     private void OnDisable()
     {
-        foreach (var weapon in _weapons)
-            _inputManager.onFireClick -= weapon.OnFireClick;
-        _inputManager.onChangeWeaponMinus -= Model.OnChangeWeaponMinus;
-        _inputManager.onChangeWeaponPlus -= Model.OnChangeWeaponPlus;
+        Model.OnDisable();
     }
 }
