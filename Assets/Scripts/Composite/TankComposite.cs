@@ -7,46 +7,34 @@ public class TankComposite : Composite
     [SerializeField] private TransformableView _tankPrefab;
     [SerializeField] private Area _playerArea;
 
-    public Tank Model => _model;
+    public Tank Model { get; private set; }
 
     private TransformableView _transformableView;
     private InputManager _inputManager;
-    private Tank _model;
-    private readonly Vector3 spawnPosition = new Vector3(0, 0.5f, 0);
+    private List<DefaultWeapon> _weapons = new List<DefaultWeapon>();
 
+    private readonly Vector3 spawnPosition = new Vector3(0, 0.5f, 0);
 
     public override void Compose()
     {
         _transformableView = Instantiate(_tankPrefab);
         _inputManager = new KeyboardInput();
-        _model = new Tank(spawnPosition, 0,
+        Model = new Tank(spawnPosition, 0,
                           _inputManager,
                           _playerArea);
-        _transformableView.Init(_model);
-        _inputManager.onFireClick += OnFireClick;
-        _inputManager.onChangeWeaponMinus += OnChangeWeaponMinus;
-        _inputManager.onChangeWeaponPlus += OnChangeWeaponPlus;
+        _weapons.Add(new DefaultWeapon());
+        foreach (var weapon in _weapons)
+            _inputManager.onFireClick += weapon.OnFireClick;
+        _inputManager.onChangeWeaponMinus += Model.OnChangeWeaponMinus;
+        _inputManager.onChangeWeaponPlus += Model.OnChangeWeaponPlus;
+        _transformableView.Init(Model);
     }
 
     private void OnDisable()
     {
-        _inputManager.onFireClick -= OnFireClick;
-        _inputManager.onChangeWeaponMinus -= OnChangeWeaponMinus;
-        _inputManager.onChangeWeaponPlus -= OnChangeWeaponPlus;
-    }
-
-    private void OnFireClick()
-    {
-
-    }
-
-    private void OnChangeWeaponMinus()
-    {
-
-    }
-
-    private void OnChangeWeaponPlus()
-    {
-
+        foreach (var weapon in _weapons)
+            _inputManager.onFireClick -= weapon.OnFireClick;
+        _inputManager.onChangeWeaponMinus -= Model.OnChangeWeaponMinus;
+        _inputManager.onChangeWeaponPlus -= Model.OnChangeWeaponPlus;
     }
 }

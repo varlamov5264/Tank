@@ -2,9 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Enemy : Transformable
+public abstract class Enemy : DamageableCharacter
 {
-
     public Enemy(
         Vector3 position,
         float rotation,
@@ -20,24 +19,30 @@ public abstract class Enemy : Transformable
     private readonly float spread = 0.2f;
 
     private Transformable _target;
+    private const int distCoofToAdditionalRaycast = 3;
+    private const int raycastCount = 7;
+    private const int raycastRange = 7;
 
     public override void Update(float deltaTime)
     {
         base.Update(deltaTime);
         var distanceToTarget = Vector3.Distance(Position, _target.Position);
         var allowMove = distanceToTarget > MinDistance;
-        if (allowMove)
-            Move(Forward, deltaTime);
         float minDist = 0;
+        bool foundPlayer = false;
         if (_area.IsInArea(this) &&
-            allowMove &&
-            GroupRaycast(ref minDist, distanceToTarget))
+            allowMove && GroupRaycast(ref minDist, distanceToTarget, ref foundPlayer) && !foundPlayer)
         {
-            var rotateCoof = minDist < 1.5f ? 5 :
-                            (minDist < 2 ? 3 :
-                            (minDist < 3 ? 2 : 1));
-            Rotation += RotateSpeed * deltaTime * rotateCoof *
-                        (Raycast(Forward + Right, ref minDist) ? -1 : 1);
+            var forwardObstacle = Raycast(Forward, MinDistance);
+            allowMove &= !forwardObstacle;
+            if (allowMove || distanceToTarget > MinDistance * 2)
+            {
+                var rightObstacle = Raycast(Forward + Right);
+                var rotateCoof = minDist < 1.5f ? 5 :
+                                (minDist < 2 ? 3 :
+                                (minDist < 3 ? 2 : 1));
+                Rotate(rotateCoof * (rightObstacle ? -1 : 1), deltaTime);
+            }
         }
         else
         {
@@ -48,19 +53,29 @@ public abstract class Enemy : Transformable
                         rotation.eulerAngles.y,
                         RotateSpeed * deltaTime * rotateCoof);
         }
+        if (allowMove)
+            Move(Forward, deltaTime);
     }
 
-    private bool GroupRaycast(ref float minDist, float distanceToTarget)
+    private bool GroupRaycast(ref float minDist, float distanceToTarget, ref bool foundPlayer)
     {
         var forward = Forward;
         var right = Right;
-        return Raycast(forward, ref minDist) ||
-               distanceToTarget > MinDistance * 3 && (
-                   Raycast(forward + right * spread, ref minDist) ||
-                   Raycast(forward - right * spread, ref minDist) ||
-                   Raycast(forward + right * spread * 2, ref minDist) ||
-                   Raycast(forward - right * spread * 2, ref minDist) ||
-                   Raycast(forward + right * spread * 4, ref minDist, 5) ||
-                   Raycast(forward - right * spread * 4, ref minDist, 5));
+        var spreadCoof = 1;
+        var output = false;
+        for (int i = 0; i < (distanceToTarget > MinDistance * distCoofToAdditionalRaycast ? raycastCount : 1); i++)
+        {
+            var direction = forward;
+            if (i > 0)
+            {
+                direction += (right * spread * spreadCoof * (i % 2 == 1 ? 1 : -1));
+                if (i % 2 == 0)
+                    spreadCoof *= 2;
+            }
+            output |= Raycast(direction, ref minDist, ref foundPlayer, raycastRange);
+            if (foundPlayer)
+                return output;
+        }
+        return output;
     }
 }

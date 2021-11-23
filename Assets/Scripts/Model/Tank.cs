@@ -2,17 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tank : Transformable
+public class Tank : DamageableCharacter
 {
-    private InputManager _inputManager;
-    
+
+    protected override float MaxHP => 500f;
+    protected override float Protect => 0.25f;
 
     protected override float MoveSpeed => 6f;
     protected override float RotateSpeed => 120f;
 
-    public Tank(Vector3 position, float rotation, InputManager inputManager, Area area) : base(position, rotation, area)
+    private InputManager _inputManager;
+    private List<DefaultWeapon> _weapons;
+    private int currentWeaponNum = 0;
+
+    public Tank(Vector3 position,
+        float rotation,
+        InputManager inputManager,
+        Area area) : base(position, rotation, area)
     {
         _inputManager = inputManager;
+    }
+
+    public void InitWeapon(List<DefaultWeapon> weapons)
+    {
+        _weapons = weapons;
     }
 
     public override void Update(float deltaTime)
@@ -31,5 +44,16 @@ public class Tank : Transformable
     {
         base.Move(shift, deltaTime);
         _area.ClampInArea(this);
+    }
+
+
+    public void OnChangeWeaponMinus()
+    {
+
+    }
+
+    public void OnChangeWeaponPlus()
+    {
+
     }
 }

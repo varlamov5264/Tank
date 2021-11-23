@@ -30,9 +30,7 @@ public class EnemiesComposite : Composite
         {
             timers.AddTime(Time.deltaTime);
             if (timers.IsEnd())
-            {
                 timers = null;
-            }
         }
     }
 
@@ -50,8 +48,14 @@ public class EnemiesComposite : Composite
                 enemy = new MonsterRed(position, 0, _area, tankComposite.Model);
                 break;
         }
+        enemy.onDead += DeadEnemy;
         enemiesViewFactory.Create(enemy);
         enemies.Add(enemy);
+    }
+
+    private void DeadEnemy(Transformable enemy)
+    {
+        enemiesViewFactory.Destroy(enemy);
     }
 
     private Vector3 GetRandomPositionOutsideArea()

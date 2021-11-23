@@ -5,8 +5,11 @@ using UnityEngine;
 public class MonsterRed : Enemy
 {
 
+    protected override float MaxHP => 200f;
+    protected override float Protect => 0.5f;
+
     protected override float MoveSpeed => 2.5f;
-    protected override float MinDistance => 1.5f;
+    protected override float MinDistance => 2f;
 
     public MonsterRed(
         Vector3 position,

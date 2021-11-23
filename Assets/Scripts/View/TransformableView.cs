@@ -2,17 +2,17 @@ using UnityEngine;
 
 public class TransformableView : MonoBehaviour
 {
-    private Transformable _model;
+    public Transformable Model { get; private set; }
 
     public void Init(Transformable model)
     {
-        _model = model;
+        Model = model;
     }
 
     public void Update()
     {
-        _model.Update(Time.deltaTime);
-        transform.position = _model.Position;
-        transform.rotation = _model.GetQuaternion();
+        Model.Update(Time.deltaTime);
+        transform.position = Model.Position;
+        transform.rotation = Model.GetQuaternion();
     }
 }

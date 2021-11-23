@@ -13,7 +13,7 @@ public abstract class TransformableViewFactory<T> : MonoBehaviour where T: Trans
         _views.Add(model, view);
     }
 
-    public void Destroy(T model)
+    public void Destroy(Transformable model)
     {
         TransformableView view = _views[model];
         _views.Remove(model);

@@ -12,7 +12,7 @@ public class EnemiesViewFactory : TransformableViewFactory<Enemy>
     {
         if (model is MonsterRed)
             return monsterRedPrefab;
-        if (model is MonsterOrange)
+        else if (model is MonsterOrange)
             return monsterOrangePrefab;
         throw new NotImplementedException();
     }
