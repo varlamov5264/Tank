@@ -1,15 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HUD : MonoBehaviour
 {
     public Text playerHPLabel;
+    public Text enemyKillCounterLabel;
     public GameObject gameOverScreen;
 
-    private const string playerHp = "Player HP: {0}";
+    private const string _playerHp = "Player HP: {0}";
+    private const string _enemyKillCount = "EnemyKillCount: {0}";
     private Tank _player;
+    private EnemiesComposite _enemiesComposite;
 
     public void Subscribe(Tank player)
     {
@@ -19,12 +20,24 @@ public class HUD : MonoBehaviour
         _player.onDestroy += OnPlayerDead;
     }
 
-    public void OnPlayerDamage(float hp)
+    public void Subscribe(EnemiesComposite enemiesComposite)
     {
-        playerHPLabel.text = string.Format(playerHp, hp);
+        _enemiesComposite = enemiesComposite;
+        _enemiesComposite.onEnemyKill += OnEnemyKill;
+        OnEnemyKill(0);
     }
 
-    public void OnPlayerDead(Model model)
+    private void OnPlayerDamage(float hp)
+    {
+        playerHPLabel.text = string.Format(_playerHp, hp);
+    }
+
+    private void OnEnemyKill(int count)
+    {
+        enemyKillCounterLabel.text = string.Format(_enemyKillCount, count);
+    }
+
+    private void OnPlayerDead(Model model)
     {
         gameOverScreen.SetActive(true);
     }
@@ -32,5 +45,6 @@ public class HUD : MonoBehaviour
     public void OnDisable()
     {
         _player.onDamage -= OnPlayerDamage;
+        _enemiesComposite.onEnemyKill -= OnEnemyKill;
     }
 }
