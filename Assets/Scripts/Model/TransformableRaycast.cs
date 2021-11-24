@@ -1,13 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class TransformableRaycast : Transformable
 {
     public TransformableRaycast (
         Vector3 position,
-        float rotation
-        ) : base(position, rotation) {}
+        float rotation) : base(position, rotation) {}
 
     protected bool Raycast(Vector3 direction, float range = 10)
     {
@@ -18,9 +15,8 @@ public class TransformableRaycast : Transformable
 
     protected bool Raycast(Vector3 direction, ref float minDist, ref bool foundPlayer, float range)
     {
-        RaycastHit hit;
         bool isPlayer = false;
-        var ray = Raycast(direction, out hit, range);
+        var ray = Raycast(direction, out RaycastHit hit, range);
         if (ray)
         {
             if (minDist == 0 || hit.distance < minDist)
@@ -39,6 +35,11 @@ public class TransformableRaycast : Transformable
 
     protected bool Raycast(Vector3 direction, out RaycastHit hit, float range)
     {
-        return Physics.Raycast(Position, direction, out hit, range);
+        return Raycast(Position, direction, out hit, range);
+    }
+
+    protected bool Raycast(Vector3 start, Vector3 direction, out RaycastHit hit, float range)
+    {
+        return Physics.Raycast(start, direction, out hit, range);
     }
 }

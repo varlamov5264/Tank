@@ -1,16 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class WeaponViewFactory : KitViewFactory<DefaultWeapon>
+public class WeaponViewFactory : KitViewFactory<Weapon>
 {
+    [SerializeField] private KitView _defaultWeapon;
+    [SerializeField] private KitView _rocketLauncher;
 
-    [SerializeField] private KitView defaultWeapon;
-
-    protected override KitView GetTemplate(Kit model)
+    protected override KitView GetTemplate(Weapon model)
     {
         if (model is DefaultWeapon)
-            return defaultWeapon;
+            return _defaultWeapon;
+        else if (model is RocketLauncher)
+            return _rocketLauncher;
         throw new System.NotImplementedException();
     }
 }

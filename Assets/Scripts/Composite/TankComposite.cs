@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,31 +7,50 @@ public class TankComposite : Composite
     [SerializeField] private WeaponViewFactory _weaponViewFactory;
     [SerializeField] private BulletsViewFactory _bulletsViewFactory;
     [SerializeField] private Area _playerArea;
+    [SerializeField] private HUD _hud;
 
-    public Tank Model { get; private set; }
+    private Tank _model;
+    public Tank Model => _model;
 
     private TransformableView _transformableView;
     private InputManager _inputManager;
 
-    private readonly Vector3 spawnPosition = new Vector3(0, 0.5f, 0);
+    private readonly Vector3 _spawnPosition = new Vector3(0, 0.5f, 0);
 
     public override void Compose()
     {
         _transformableView = Instantiate(_tankPrefab);
         _inputManager = new KeyboardInput();
-        Model = new Tank(spawnPosition, 0,
-                          _inputManager,
-                          _playerArea);
-        var _weapons = new List<DefaultWeapon>();
-        _weapons.Add(new DefaultWeapon(Model, _bulletsViewFactory));
-        foreach (var weapon in _weapons)
+
+        _model = new Tank(_spawnPosition, 0,
+                 _playerArea,
+                 _inputManager);
+
+        var weaponsList = new List<Weapon>();
+        weaponsList.Add(new DefaultWeapon(_model, _bulletsViewFactory));
+        weaponsList.Add(new RocketLauncher(_model, _bulletsViewFactory));
+        foreach (var weapon in weaponsList)
             _weaponViewFactory.Create(weapon, _transformableView.transform);
-        Model.InitWeapon(_weapons);
-        _transformableView.Init(Model);
+        var weapons = new Weapons(weaponsList, _inputManager);
+        _model.AddWeapons(weapons);
+        _model.onDestroy += DestroyModel;
+        _transformableView.Init(_model);
+        _hud.Subscribe(_model);
+    }
+
+    protected override void DestroyModel(Model model)
+    {
+        OnDisable();
+        Destroy(_transformableView.gameObject);
+        _model = null;
     }
 
     private void OnDisable()
     {
-        Model.OnDisable();
+        if (_model != null)
+        {
+            _model.onDestroy -= DestroyModel;
+            _model.OnDisable();
+        }
     }
 }

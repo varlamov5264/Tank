@@ -1,17 +1,15 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemiesComposite : Composite
 {
-    [SerializeField] private EnemiesViewFactory enemiesViewFactory;
+    [SerializeField] private EnemiesViewFactory _enemiesViewFactory;
     [SerializeField] private int _limit;
     [SerializeField] private float _spawnInterval = 5f;
     [SerializeField] private Area _area;
-    [SerializeField] private TankComposite tankComposite;
-    private List<Enemy> enemies = new List<Enemy>();
-    private Timers timers;
+    [SerializeField] private TankComposite _tankComposite;
+    private List<Model> _enemies = new List<Model>();
+    private Timers _timers;
 
     public override void Compose()
     {
@@ -21,16 +19,16 @@ public class EnemiesComposite : Composite
             var timer = new Timer(i * _spawnInterval, CreateRandomEnemy);
             timersList.Add(timer);
         }
-        timers = new Timers(timersList);
+        _timers = new Timers(timersList);
     }
 
     public void Update()
     {
-        if (timers != null)
+        if (_timers != null)
         {
-            timers.AddTime(Time.deltaTime);
-            if (timers.IsEnd())
-                timers = null;
+            _timers.AddTime(Time.deltaTime);
+            if (_timers.IsEnd())
+                _timers = null;
         }
     }
 
@@ -42,20 +40,21 @@ public class EnemiesComposite : Composite
         switch (rand)
         {
             case 0:
-                enemy = new MonsterOrange(position, 0, _area, tankComposite.Model);
+                enemy = new MonsterOrange(position, 0, _area, _tankComposite.Model);
                 break;
             case 1:
-                enemy = new MonsterRed(position, 0, _area, tankComposite.Model);
+                enemy = new MonsterRed(position, 0, _area, _tankComposite.Model);
                 break;
         }
-        enemy.onDestroy += DeadEnemy;
-        enemiesViewFactory.Create(enemy);
-        enemies.Add(enemy);
+        enemy.onDestroy += DestroyModel;
+        _enemiesViewFactory.Create(enemy);
+        _enemies.Add(enemy);
     }
 
-    private void DeadEnemy(Transformable enemy)
+    protected override void DestroyModel(Model model)
     {
-        enemiesViewFactory.Destroy(enemy);
+        _enemies.Remove(model);
+        _enemiesViewFactory.Destroy(model);
         CreateRandomEnemy();
     }
 

@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
-public class KitView : View<Kit>
+﻿public class KitView : View<Kit>
 {
     public override void Init(Kit model)
     {
@@ -15,9 +11,8 @@ public class KitView : View<Kit>
         gameObject.SetActive(active);
     }
 
-    protected override void OnDisable()
+    private void OnDestroy()
     {
-        base.OnDisable();
         Model.onChangeActive -= SetActive;
     }
 }

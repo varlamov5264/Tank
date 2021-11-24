@@ -1,25 +1,48 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DefaultWeapon : Kit
+public class Weapons : Model
 {
-    private BulletsViewFactory _bulletsViewFactory;
-    private Tank _tank;
-
-    public DefaultWeapon(Tank tank, BulletsViewFactory bulletsViewFactory)
+    public Weapons(List<Weapon> list, InputManager inputManager)
     {
-        _bulletsViewFactory = bulletsViewFactory;
-        _tank = tank;
+        _list = list;
+        _inputManager = inputManager;
+        foreach (var weapon in _list)
+            _inputManager.onFireClick += weapon.OnFireClick;
+        _inputManager.onChangeWeaponMinus += OnChangeWeaponMinus;
+        _inputManager.onChangeWeaponPlus += OnChangeWeaponPlus;
+        SelectWeapon();
     }
 
-    public void OnFireClick()
+    private readonly List<Weapon> _list;
+    private readonly InputManager _inputManager;
+    private int _currentWeaponNum = 0;
+
+    public void OnChangeWeaponMinus()
     {
-        _bulletsViewFactory.Create(GetBullet());
+        SelectWeapon(-1);
     }
 
-    protected virtual DefaultBullet GetBullet()
+    public void OnChangeWeaponPlus()
     {
-        return new DefaultBullet(_tank.Position, _tank.Rotation);
+        SelectWeapon(1);
+    }
+
+    private void SelectWeapon(int dir = 0)
+    {
+        _currentWeaponNum = Mathf.Clamp(_currentWeaponNum + dir, 0, _list.Count - 1);
+        for (int i = 0; i < _list.Count; i++)
+        {
+            _list[i].SetActive(i == _currentWeaponNum);
+        }
+    }
+
+    public override void OnDisable()
+    {
+        base.OnDisable();
+        foreach (var weapon in _list)
+            _inputManager.onFireClick -= weapon.OnFireClick;
+        _inputManager.onChangeWeaponMinus -= OnChangeWeaponMinus;
+        _inputManager.onChangeWeaponPlus -= OnChangeWeaponPlus;
     }
 }

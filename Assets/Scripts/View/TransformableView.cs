@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class TransformableView : View<Transformable>
 {
     public override void Update()

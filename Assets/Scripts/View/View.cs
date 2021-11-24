@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class View<T> : MonoBehaviour where T : Model
 {
@@ -15,6 +12,11 @@ public abstract class View<T> : MonoBehaviour where T : Model
     public virtual void Update()
     {
         Model.Update(Time.deltaTime);
+    }
+
+    public virtual void FixedUpdate()
+    {
+        Model.FixedUpdate(Time.fixedDeltaTime);
     }
 
     protected virtual void OnDisable() { }

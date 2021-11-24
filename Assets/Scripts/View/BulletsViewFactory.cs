@@ -1,16 +1,17 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class BulletsViewFactory : TransformableViewFactory<DefaultBullet>
+public class BulletsViewFactory : TransformableViewFactory<Bullet>
 {
-    [SerializeField] private TransformableView defaultBullet;
+    [SerializeField] private TransformableView _defaultBullet;
+    [SerializeField] private TransformableView _rocket;
 
-    protected override TransformableView GetTemplate(DefaultBullet model)
+    protected override TransformableView GetTemplate(Bullet model)
     {
         if (model is DefaultBullet)
-            return defaultBullet;
+            return _defaultBullet;
+        if (model is Rocket)
+            return _rocket;
         throw new NotImplementedException();
     }
 }

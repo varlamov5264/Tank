@@ -1,27 +1,30 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class Enemy : DamageableCharacter
+public abstract class Enemy : Character
 {
     public Enemy(
         Vector3 position,
         float rotation,
         Area area,
-        Transformable target) : base(position, rotation, area)
+        Character target) : base(position, rotation, area)
     {
         _target = target;
     }
 
+    protected virtual float DamageHP => 10f;
+    protected virtual float Cooldown => 0.5f;
     protected virtual float MinDistance => 1f;
-
     protected override float RotateSpeed => 60f;
-    private readonly float spread = 0.2f;
+    protected bool AllowAttack => _attackTimer >= Cooldown;
 
-    private Transformable _target;
-    private const int distCoofToAdditionalRaycast = 3;
-    private const int raycastCount = 7;
-    private const int raycastRange = 7;
+    private float _attackTimer;
+
+    private readonly Character _target;
+    private const float _spread = 0.2f;
+    private const int _distCoofToAdditionalRaycast = 3;
+    private const int _raycastCount = 7;
+    private const int _raycastRange = 7;
+    private const int _maxCoofAttackDistance = 2;
 
     public override void Update(float deltaTime)
     {
@@ -53,8 +56,23 @@ public abstract class Enemy : DamageableCharacter
                         rotation.eulerAngles.y,
                         RotateSpeed * deltaTime * rotateCoof);
         }
+        _attackTimer += deltaTime;
         if (allowMove)
+        {
+            AnimationPlay(Animations.Idle);
             Move(Forward, deltaTime);
+        }
+        else if (AllowAttack && distanceToTarget < MinDistance * _maxCoofAttackDistance)
+        {
+            AttackTarget();
+        }
+    }
+
+    private void AttackTarget()
+    {
+        AnimationPlay(Animations.Attack);
+        _target.Damage(DamageHP);
+        _attackTimer = 0;
     }
 
     private bool GroupRaycast(ref float minDist, float distanceToTarget, ref bool foundPlayer)
@@ -63,16 +81,16 @@ public abstract class Enemy : DamageableCharacter
         var right = Right;
         var spreadCoof = 1;
         var output = false;
-        for (int i = 0; i < (distanceToTarget > MinDistance * distCoofToAdditionalRaycast ? raycastCount : 1); i++)
+        for (int i = 0; i < (distanceToTarget > MinDistance * _distCoofToAdditionalRaycast ? _raycastCount : 1); i++)
         {
             var direction = forward;
             if (i > 0)
             {
-                direction += (right * spread * spreadCoof * (i % 2 == 1 ? 1 : -1));
+                direction += (right * _spread * spreadCoof * (i % 2 == 1 ? 1 : -1));
                 if (i % 2 == 0)
                     spreadCoof *= 2;
             }
-            output |= Raycast(direction, ref minDist, ref foundPlayer, raycastRange);
+            output |= Raycast(direction, ref minDist, ref foundPlayer, _raycastRange);
             if (foundPlayer)
                 return output;
         }

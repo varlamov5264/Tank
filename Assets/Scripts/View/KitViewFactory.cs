@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class KitViewFactory<T> : MonoBehaviour where T: Kit
 {
@@ -10,5 +8,5 @@ public abstract class KitViewFactory<T> : MonoBehaviour where T: Kit
         view.Init(model);
     }
 
-    protected abstract KitView GetTemplate(Kit model);
+    protected abstract KitView GetTemplate(T model);
 }

@@ -1,8 +1,13 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public abstract class Transformable : Model
 {
+    public Transformable(Vector3 position, float rotation)
+    {
+        Position = position;
+        Rotation = rotation;
+    }
+
     public Vector3 Position;
     public float Rotation;
     
@@ -12,15 +17,7 @@ public abstract class Transformable : Model
     public Vector3 Forward => GetQuaternion() * Vector3.forward;
     public Vector3 Right => GetQuaternion() * Vector3.right;
 
-    public Action<Transformable> onDestroy;
-
     public Quaternion GetQuaternion() => Quaternion.Euler(0, Rotation, 0);
-
-    public Transformable(Vector3 position, float rotation)
-    {
-        Position = position;
-        Rotation = rotation;
-    }
 
     public virtual void Move(Vector3 shift, float deltaTime)
     {
