@@ -6,7 +6,7 @@ public class TankComposite : Composite
     [SerializeField] private TransformableView _tankPrefab;
     [SerializeField] private WeaponViewFactory _weaponViewFactory;
     [SerializeField] private BulletsViewFactory _bulletsViewFactory;
-    [SerializeField] private Area _playerArea;
+    [SerializeField] private AreaComposite _areaComposite;
     [SerializeField] private HUD _hud;
 
     private Tank _model;
@@ -23,7 +23,7 @@ public class TankComposite : Composite
         _inputManager = new KeyboardInput();
 
         _model = new Tank(_spawnPosition, 0,
-                 _playerArea,
+                 _areaComposite.Model,
                  _inputManager);
 
         var weaponsList = new List<Weapon>();

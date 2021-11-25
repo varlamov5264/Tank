@@ -4,5 +4,5 @@ public abstract class Composite : MonoBehaviour
 {
     public abstract void Compose();
 
-    protected abstract void DestroyModel(Model model);
+    protected virtual void DestroyModel(Model model) { }
 }

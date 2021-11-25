@@ -4,21 +4,21 @@ public class Timer
 {
     public Timer(float time, Action onEnd)
     {
-        this.time = time;
-        this.onEnd = onEnd;
-        currentTime = 0;
+        _time = time;
+        _onEnd = onEnd;
+        _currentTime = 0;
     }
 
-    private float time;
-    private Action onEnd;
-    private float currentTime;
+    private float _time;
+    private Action _onEnd;
+    private float _currentTime;
 
-    public bool IsEnd => currentTime >= time;
+    public bool IsEnd => _currentTime >= _time;
 
     public void AddTime(float deltaTime)
     {
-        currentTime += deltaTime;
+        _currentTime += deltaTime;
         if (IsEnd)
-            onEnd?.Invoke();
+            _onEnd?.Invoke();
     }
 }

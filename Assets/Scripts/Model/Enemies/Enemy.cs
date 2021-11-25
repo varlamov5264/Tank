@@ -52,9 +52,9 @@ public abstract class Enemy : Character
             Vector3 relativePos = _target.Position - Position;
             Quaternion rotation = Quaternion.LookRotation(relativePos, Vector3.up);
             var rotateCoof = distanceToTarget < MinDistance * 3 ? 3 : 1;
-            Rotation = Mathf.MoveTowardsAngle(Rotation,
+            SetRotation(Mathf.MoveTowardsAngle(Rotation,
                         rotation.eulerAngles.y,
-                        RotateSpeed * deltaTime * rotateCoof);
+                        RotateSpeed * deltaTime * rotateCoof));
         }
         _attackTimer += deltaTime;
         if (allowMove)

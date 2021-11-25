@@ -4,22 +4,22 @@ public class Timers
 {
     public Timers(List<Timer> timers)
     {
-        this.timers = timers;
+        _timers = timers;
     }
 
-    private List<Timer> timers;
+    private List<Timer> _timers;
 
     public void AddTime(float deltaTime)
     {
-        foreach (var timer in timers)
+        foreach (var timer in _timers)
         {
             timer.AddTime(deltaTime);
         }
-        timers = timers.FindAll(x => !x.IsEnd);
+        _timers = _timers.FindAll(x => !x.IsEnd);
     }
 
     public bool IsEnd()
     {
-        return timers.Count == 0;
+        return _timers.Count == 0;
     }
 }

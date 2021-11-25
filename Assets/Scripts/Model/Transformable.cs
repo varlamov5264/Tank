@@ -8,9 +8,9 @@ public abstract class Transformable : Model
         Rotation = rotation;
     }
 
-    public Vector3 Position;
-    public float Rotation;
-    
+    public Vector3 Position { get; private set; }
+    public float Rotation { get; private set; }
+
     protected virtual float MoveSpeed => 10f;
     protected virtual float RotateSpeed => 60f;
 
@@ -22,6 +22,16 @@ public abstract class Transformable : Model
     public virtual void Move(Vector3 shift, float deltaTime)
     {
         Position += shift * MoveSpeed * deltaTime;
+    }
+
+    public virtual void SetPosition(Vector3 shift)
+    {
+        Position = shift;
+    }
+
+    public virtual void SetRotation(float rotation)
+    {
+        Rotation = rotation;
     }
 
     public void Rotate(float delta, float deltaTime)
